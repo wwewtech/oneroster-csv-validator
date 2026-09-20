@@ -1,0 +1,26 @@
+name: Validate Skill
+on:
+  push:
+    paths:
+      - 'SKILL.md'
+      - 'skills/**/SKILL.md'
+  pull_request:
+    paths:
+      - 'SKILL.md'
+      - 'skills/**/SKILL.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Validate Frontmatter
+        run: |
+          npm install -g yaml-lint
+          # Extract and lint YAML frontmatter
+          for f in $(find . -name "SKILL.md"); do
+            echo "Validating $f"
+            awk '/^---$/ { if(c++==1) exit; next; } c' "$f" > .tmp.yml
+            yamllint .tmp.yml
+          done

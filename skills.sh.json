@@ -1,0 +1,13 @@
+{
+  "$schema": "https://skills.sh/schema/v1/skills.json",
+  "group": {
+    "title": "EdTech & Rostering Validation",
+    "description": "Validate OneRoster 1.1/1.2 CSV roster sets for bulk vs delta correctness, GUID integrity, orphan links, and encoding traps before SIS/Clever import."
+  },
+  "skills": [
+    {
+      "name": "oneroster-csv-validator",
+      "path": "skills/oneroster-csv-validator/SKILL.md"
+    }
+  ]
+}

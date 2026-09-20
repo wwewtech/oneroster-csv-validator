@@ -1,0 +1,26 @@
+{
+  "name": "@wwewtech/oneroster-csv-validator",
+  "version": "1.0.0",
+  "description": "Validate OneRoster 1.1/1.2 CSV roster sets for bulk vs delta correctness, GUID integrity, orphan links, and encoding traps before SIS/Clever import.",
+  "author": "Pavel Lebedev <pasha20051344@gmail.com> (https://wwew.tech)",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "skills-sh",
+    "claude-code",
+    "antigravity",
+    "cursor",
+    "windsurf",
+    "oneroster",
+    "csv-validator",
+    "edtech",
+    "sis",
+    "clever",
+    "rostering",
+    "school-data"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wwewtech/oneroster-csv-validator.git"
+  }
+}

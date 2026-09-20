@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneRoster CSV Validator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --surface-color: #09090b;
+            --border-color: #27272a;
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --accent: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1, h2, h3 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            padding: 6rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .install-box {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            border-radius: 4px;
+        }
+
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+
+        pre {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        footer {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>OneRoster CSV Validator</h1>
+            <span>wwewtech</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <h2>Pre-flight Data Integrity</h2>
+            <p>Validate OneRoster 1.1/1.2 CSV roster sets for bulk vs delta correctness, GUID integrity, and encoding traps before SIS or Clever import.</p>
+            <div class="install-box">npx skills add wwewtech/oneroster-csv-validator</div>
+        </div>
+
+        <section>
+            <h2>Validation Pipeline</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>Manifest & Structure</h3>
+                    <p>Ensures <code>manifest.csv</code> exists at the root, accurately describes the files present, and enforces core file presence for bulk exchanges.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Bulk vs Delta Discipline</h3>
+                    <p>Validates strict file modes. Bulk rows must exclude <code>dateLastModified</code> and <code>status</code>. Delta rows require them. Mixed files fail fast.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>GUID Integrity</h3>
+                    <p>Traces every <code>sourcedId</code> across files. Prevents orphan references in enrollments or classes, ensuring data consistency without inventing missing IDs.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Enrollment Sanity</h3>
+                    <p>Verifies classes have primary teachers and active students. Differentiates between active syncing rows and inactive/deleted records.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Encoding Traps</h3>
+                    <p>Detects stripped leading zeros (Excel corruption) and enforces UTF-8 compliance, protecting against accidental student creation/deletion.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Output Report Format</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">The validator produces clear, actionable findings reports rather than silently altering files.</p>
+            <pre><code>## OneRoster validation — [archive name]
+- Spec version assumed: [1.1 / 1.2 / unknown]
+- Mode: [bulk / delta / MIXED-INVALID]
+- Files: [present/missing list]
+- Orphan references: [file:line → missing id, ...] or none
+- Enrollment issues: [...]
+- Encoding issues: [...]
+- Verdict: [IMPORTABLE / FIXABLE (list) / INVALID]</code></pre>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2026 wwewtech (Pavel Lebedev). Released under the MIT License.
+    </footer>
+</body>
+</html>

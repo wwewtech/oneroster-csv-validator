@@ -1,0 +1,8 @@
+# OneRoster CSV Validator
+
+- Core requirement: manifest.csv must exist at the zip root and accurately describe the files present.
+- Bulk vs Delta: Bulk rows MUST NOT have `dateLastModified` or `status`. Delta rows MUST have them. Mixed files are invalid.
+- GUID Integrity: All `sourcedId` referenced must exist. Do not invent missing IDs.
+- Enrollment Sanity: Each class needs a primary teacher and one student.
+- Encoding: UTF-8 required. Check for stripped leading zeros (Excel corruption).
+- Never auto-fix CSV files in place, produce a detailed findings report instead.

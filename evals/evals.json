@@ -1,0 +1,27 @@
+{
+  "evals": [
+    {
+      "prompt": "Validate this extracted OneRoster bulk export. It contains users.csv, orgs.csv, classes.csv, enrollments.csv, courses.csv, and academicSessions.csv but no manifest.csv.",
+      "files": [],
+      "id": 1,
+      "expected_output": "Agent stops immediately and reports: manifest.csv is REQUIRED at zip root under OneRoster 1.1/1.2 rules. Does not guess the spec version. Reports verdict as INVALID with the specific missing file. Does not attempt to validate remaining files without the manifest.",
+      "name": "missing_manifest"
+    },
+    {
+      "prompt": "Check this OneRoster bulk export for referential integrity. The enrollments.csv references userSourcedId values that don't appear in users.csv.",
+      "files": [],
+      "id": 2,
+      "expected_output": "Agent runs GUID integrity check across all files. Lists every orphan reference with file name and line number (e.g., enrollments.csv:47 → missing user ID abc123). Never invents missing IDs. Reports each class that lacks a primary teacher or has zero students. Verdict: FIXABLE with specific list of orphan references to resolve.",
+      "name": "orphan_sourced_ids"
+    },
+    {
+      "prompt": "A school admin re-saved the users.csv file in Microsoft Excel before uploading. Some student IDs like 00123 now show as 123. Validate and report issues.",
+      "files": [],
+      "id": 3,
+      "expected_output": "Agent detects the encoding trap: Excel strips leading zeros, which changes student IDs (00123 becomes 123). This effectively deletes the original student and creates a new one during import. Flags all affected rows. Recommends CSVEdit, Sublime, or TextEdit instead of Excel. Reports verdict as FIXABLE with a list of corrupted IDs. Never auto-fixes in place — produces findings report only.",
+      "name": "excel_corrupted_zeros"
+    }
+  ],
+  "skill_name": "oneroster-csv-validator",
+  "version": "1.0.0"
+}
