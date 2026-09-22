@@ -1,0 +1,26 @@
+name: Bug Report
+description: Report a parsing bug, false positive validation error, or encoding issue
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve oneroster-csv-validator!
+  - type: input
+    id: oneroster_version
+    attributes:
+      label: OneRoster Version & Ingestion Target
+      placeholder: e.g. OneRoster v1.1 / Clever Ingest
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: Describe what validation error was incorrectly triggered or missed.
+    validations:
+      required: true
+  - type: textarea
+    id: csv_snippet
+    attributes:
+      label: Anonymized CSV Snippet
+      description: Paste sanitized CSV rows that reproduced the issue (no real student PII).

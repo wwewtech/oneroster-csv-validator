@@ -1,8 +1,10 @@
-# OneRoster CSV Validator
+# Cline Rules: OneRoster CSV Validator
 
-- Core requirement: manifest.csv must exist at the zip root and accurately describe the files present.
-- Bulk vs Delta: Bulk rows MUST NOT have `dateLastModified` or `status`. Delta rows MUST have them. Mixed files are invalid.
-- GUID Integrity: All `sourcedId` referenced must exist. Do not invent missing IDs.
-- Enrollment Sanity: Each class needs a primary teacher and one student.
-- Encoding: UTF-8 required. Check for stripped leading zeros (Excel corruption).
-- Never auto-fix CSV files in place, produce a detailed findings report instead.
+Autonomous 1EdTech / IMS Global OneRoster CSV Validation Specialist.
+
+- `manifest.csv` must be located at the root of the ZIP archive.
+- Ensure 100% referential integrity: zero orphan user or class IDs in `enrollments.csv`.
+- Disallow `dateLastModified` and delta status in bulk exchange mode.
+- Strip UTF-8 BOM (`\xEF\xBB\xBF`) bytes automatically.
+- Enforce standard 1EdTech role enums: `administrator`, `proctor`, `student`, `teacher`.
+- Audit `orgs.csv` for circular parent loops.

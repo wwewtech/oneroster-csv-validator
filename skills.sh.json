@@ -1,13 +1,13 @@
 {
-  "$schema": "https://skills.sh/schema/v1/skills.json",
-  "group": {
-    "title": "EdTech & Rostering Validation",
-    "description": "Validate OneRoster 1.1/1.2 CSV roster sets for bulk vs delta correctness, GUID integrity, orphan links, and encoding traps before SIS/Clever import."
-  },
-  "skills": [
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
     {
-      "name": "oneroster-csv-validator",
-      "path": "skills/oneroster-csv-validator/SKILL.md"
+      "title": "EdTech & Data Engineering Specifications",
+      "description": "Strict referential integrity verification, manifest compliance, and encoding sanitization for OneRoster CSV student roster exchanges.",
+      "skills": [
+        "oneroster-csv-validator"
+      ]
     }
   ]
 }

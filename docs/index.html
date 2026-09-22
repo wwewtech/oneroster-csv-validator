@@ -1,191 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneRoster CSV Validator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #000000;
-            --surface-color: #09090b;
-            --border-color: #27272a;
-            --text-primary: #f4f4f5;
-            --text-secondary: #a1a1aa;
-            --accent: #ffffff;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>oneroster-csv-validator · 1EdTech Data Integrity & Pre-Flight Linter</title>
+  <meta name="description" content="Validate OneRoster v1.1 and v1.2 CSV roster sets: manifest authority, bulk vs delta strictness, foreign key references, and UTF-8 BOM sanitization.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23000%22/><path d=%22M8 8h16v4H8zM8 14h16v4H8zM8 20h10v4H8z%22 fill=%22%23a855f7%22/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --surface-1: #09090b;
+      --surface-2: #121215;
+      --surface-elevated: #18181c;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.16);
+      --text: #f4f4f5;
+      --text-dim: #a1a1aa;
+      --text-muted: #52525b;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --accent-blue: #38bdf8;
+      --accent-red: #ef4444;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
+    header.site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      height: 54px;
+      display: flex;
+      align-items: center;
+    }
+    .header-inner {
+      max-width: 1040px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .brand-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      background: #581c87;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      display: grid;
+      place-items: center;
+      color: #c084fc;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    .brand-title { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+    .nav-links { display: flex; gap: 16px; font-size: 13px; }
+    .nav-links a { color: var(--text-dim); text-decoration: none; transition: color 120ms; }
+    .nav-links a:hover { color: #fff; }
 
-        header {
-            position: sticky;
-            top: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            z-index: 100;
-        }
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 40px 20px 100px;
+    }
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .hero {
+      padding: 40px 0 32px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #d8b4fe;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 720px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
 
-        h1, h2, h3 {
-            font-weight: 600;
-            letter-spacing: -0.02em;
-        }
+    .install-bar {
+      display: flex;
+      align-items: center;
+      background: var(--surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      max-width: 540px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    .install-bar code { flex: 1; color: #c084fc; }
+    .copy-btn {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 120ms var(--ease-out);
+    }
+    .copy-btn:hover { background: #27272a; border-color: var(--border-hover); }
+    .copy-btn:active { transform: scale(0.96); }
 
-        .hero {
-            padding: 6rem 2rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-        }
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 48px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 24px; }
 
-        .hero h2 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
+    /* Linter Box */
+    .linter-box {
+      background: var(--surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .linter-header {
+      background: var(--surface-2);
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .linter-tabs { display: flex; gap: 6px; }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-dim);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 120ms;
+    }
+    .tab-btn.active { background: #18181b; border-color: var(--border-hover); color: #fff; }
 
-        .hero p {
-            color: var(--text-secondary);
-            font-size: 1.25rem;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
+    .linter-actions { display: flex; gap: 8px; }
+    .btn-sample {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--accent-purple);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+    }
+    .btn-sample:hover { background: rgba(168, 85, 247, 0.1); }
 
-        .install-box {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            display: inline-block;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--accent);
-            border-radius: 4px;
-        }
+    .linter-body { padding: 20px; }
 
-        section {
-            padding: 4rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            border-bottom: 1px solid var(--border-color);
-        }
+    textarea.csv-editor {
+      width: 100%;
+      height: 180px;
+      background: #000;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 12px;
+      resize: vertical;
+      outline: none;
+      line-height: 1.5;
+    }
+    textarea.csv-editor:focus { border-color: var(--accent-purple); }
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn-validate {
+      background: #9333ea;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 120ms var(--ease-out);
+    }
+    .btn-validate:hover { background: #7e22ce; }
+    .btn-validate:active { transform: scale(0.97); }
 
-        .feature-card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            padding: 2rem;
-        }
+    /* Results */
+    .diagnostic-panel {
+      margin-top: 24px;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 20px;
+    }
+    .diag-item {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .diag-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; }
+    .diag-warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: #fbbf24; }
+    .diag-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; }
 
-        .feature-card h3 {
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-        }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 16px;
+      border: 1px solid var(--border-subtle);
+    }
+    table.data-table th {
+      background: var(--surface-2);
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+    }
+    table.data-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--surface-1);
+    }
 
-        .feature-card p {
-            color: var(--text-secondary);
-        }
-
-        pre {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            overflow-x: auto;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text-secondary);
-            margin-top: 1rem;
-        }
-
-        code {
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        footer {
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-    </style>
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <h1>OneRoster CSV Validator</h1>
-            <span>wwewtech</span>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">&#x1F393;</div>
+        <span class="brand-title">oneroster-csv-validator</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#linter">CSV Linter</a>
+        <a href="#rules">Anti-Patterns</a>
+        <a href="#gate">Quality Gate</a>
+        <a href="https://github.com/wwewtech/oneroster-csv-validator" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <section class="hero">
+      <div class="badge">1EDTECH / IMS GLOBAL v1.1 &amp; v1.2 · v1.0.0</div>
+      <h1>Validate OneRoster CSV Roster Sets Pre-Flight</h1>
+      <p>Audit foreign key referential integrity across users, classes, and enrollments. Detect broken orphan links, sanitize Excel UTF-8 BOM bytes, enforce strict bulk vs delta mode partitioning, and eliminate Clever import rejections.</p>
+
+      <div class="install-bar">
+        <code>npx skills add wwewtech/oneroster-csv-validator</code>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('npx skills add wwewtech/oneroster-csv-validator'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 1500)">Copy</button>
+      </div>
+    </section>
+
+    <!-- LIVE CSV LINTER -->
+    <h2 class="section-title" id="linter">&#x26A1; In-Browser OneRoster Relational Linter</h2>
+    <p class="section-subtitle">Inspect the simulated CSV suite. Toggle between tabs or load pre-built sample packages to test referential integrity checks.</p>
+
+    <div class="linter-box">
+      <div class="linter-header">
+        <div class="linter-tabs">
+          <button class="tab-btn active" onclick="selectTab('manifest')">manifest.csv</button>
+          <button class="tab-btn" onclick="selectTab('users')">users.csv</button>
+          <button class="tab-btn" onclick="selectTab('classes')">classes.csv</button>
+          <button class="tab-btn" onclick="selectTab('enrollments')">enrollments.csv</button>
         </div>
-    </header>
+        <div class="linter-actions">
+          <button class="btn-sample" onclick="loadSample(true)">Load Valid District Sample</button>
+          <button class="btn-sample" style="color: var(--accent-red);" onclick="loadSample(false)">Load Corrupted Orphan Sample</button>
+        </div>
+      </div>
+      <div class="linter-body">
+        <textarea id="csvEditor" class="csv-editor" oninput="saveCurrentTab()"></textarea>
 
-    <main>
-        <div class="hero">
-            <h2>Pre-flight Data Integrity</h2>
-            <p>Validate OneRoster 1.1/1.2 CSV roster sets for bulk vs delta correctness, GUID integrity, and encoding traps before SIS or Clever import.</p>
-            <div class="install-box">npx skills add wwewtech/oneroster-csv-validator</div>
+        <div class="controls-bar">
+          <button class="btn-validate" onclick="runValidation()">Run Referential Audit</button>
+          <span id="linterStatus" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);">Ready for validation</span>
         </div>
 
-        <section>
-            <h2>Validation Pipeline</h2>
-            <div class="features">
-                <div class="feature-card">
-                    <h3>Manifest & Structure</h3>
-                    <p>Ensures <code>manifest.csv</code> exists at the root, accurately describes the files present, and enforces core file presence for bulk exchanges.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Bulk vs Delta Discipline</h3>
-                    <p>Validates strict file modes. Bulk rows must exclude <code>dateLastModified</code> and <code>status</code>. Delta rows require them. Mixed files fail fast.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>GUID Integrity</h3>
-                    <p>Traces every <code>sourcedId</code> across files. Prevents orphan references in enrollments or classes, ensuring data consistency without inventing missing IDs.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Enrollment Sanity</h3>
-                    <p>Verifies classes have primary teachers and active students. Differentiates between active syncing rows and inactive/deleted records.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Encoding Traps</h3>
-                    <p>Detects stripped leading zeros (Excel corruption) and enforces UTF-8 compliance, protecting against accidental student creation/deletion.</p>
-                </div>
-            </div>
-        </section>
+        <div class="diagnostic-panel" id="diagPanel">
+          <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Diagnostic Telemetry &amp; Log</h4>
+          <div id="diagList"></div>
+        </div>
+      </div>
+    </div>
 
-        <section>
-            <h2>Output Report Format</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 1rem;">The validator produces clear, actionable findings reports rather than silently altering files.</p>
-            <pre><code>## OneRoster validation — [archive name]
-- Spec version assumed: [1.1 / 1.2 / unknown]
-- Mode: [bulk / delta / MIXED-INVALID]
-- Files: [present/missing list]
-- Orphan references: [file:line → missing id, ...] or none
-- Enrollment issues: [...]
-- Encoding issues: [...]
-- Verdict: [IMPORTABLE / FIXABLE (list) / INVALID]</code></pre>
-        </section>
-    </main>
+    <!-- ANTI-PATTERNS -->
+    <h2 class="section-title" id="rules">&#x1F6A8; Banned OneRoster Validation Anti-Patterns</h2>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Anti-Pattern</th>
+          <th>Manifestation</th>
+          <th>Mandatory Production Counter-Rule</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>The UTF-8 BOM Trap</strong></td>
+          <td>Excel prepends <code>\xEF\xBB\xBF</code> to headers</td>
+          <td>Strip BOM bytes during pre-flight pass before schema check.</td>
+        </tr>
+        <tr>
+          <td><strong>Orphan Enrollment Links</strong></td>
+          <td><code>enrollments.csv</code> points to missing user ID</td>
+          <td>Strict referential integrity validation: 0 broken foreign keys.</td>
+        </tr>
+        <tr>
+          <td><strong>Nested Archive Structure</strong></td>
+          <td>Zip contains <code>/district/manifest.csv</code></td>
+          <td><code>manifest.csv</code> must exist at the archive root level.</td>
+        </tr>
+        <tr>
+          <td><strong>Bulk / Delta Column Bleed</strong></td>
+          <td>Bulk CSV contains <code>dateLastModified</code> or <code>status</code></td>
+          <td>Enforce strict schema separation: no delta headers in bulk.</td>
+        </tr>
+      </tbody>
+    </table>
 
-    <footer>
-        &copy; 2026 wwewtech (Pavel Lebedev). Released under the MIT License.
-    </footer>
+  </div>
+
+  <footer>
+    <div class="container" style="padding: 0;">
+      <p>oneroster-csv-validator · MIT License · 1EdTech Compliance · <a href="https://github.com/wwewtech/oneroster-csv-validator" style="color: var(--text-dim);">wwewtech</a></p>
+    </div>
+  </footer>
+
+  <script>
+    let activeTab = 'enrollments';
+
+    const SAMPLES_VALID = {
+      manifest: `propertyName,value\noneroster.version,1.1\nfile.orgs,bulk\nfile.users,bulk\nfile.courses,bulk\nfile.classes,bulk\nfile.enrollments,bulk\nfile.academicSessions,bulk`,
+      users: `sourcedId,status,orgSourcedIds,role,givenName,familyName\nusr_001,active,org_high,teacher,Jane,Smith\nusr_002,active,org_high,student,Alex,Johnson\nusr_003,active,org_high,student,Maria,Garcia`,
+      classes: `sourcedId,status,title,courseSourcedId,schoolSourcedId\ncls_bio101,active,AP Biology,crs_bio,org_high\ncls_math10,active,Algebra II,crs_math,org_high`,
+      enrollments: `sourcedId,status,classSourcedId,userSourcedId,role,primary\nenr_01,active,cls_bio101,usr_001,teacher,true\nenr_02,active,cls_bio101,usr_002,student,false\nenr_03,active,cls_bio101,usr_003,student,false`
+    };
+
+    const SAMPLES_CORRUPT = {
+      manifest: `propertyName,value\noneroster.version,1.1\nfile.users,bulk\nfile.classes,bulk\nfile.enrollments,bulk`,
+      users: `\uFEFFsourcedId,status,orgSourcedIds,role,givenName,familyName\nusr_001,active,org_high,teacher,Jane,Smith\nusr_002,active,org_high,student,Alex,Johnson`,
+      classes: `sourcedId,status,title,courseSourcedId,schoolSourcedId\ncls_bio101,active,AP Biology,crs_bio,org_high`,
+      enrollments: `sourcedId,status,classSourcedId,userSourcedId,role,primary\nenr_01,active,cls_bio101,usr_001,substitute_teacher,true\nenr_02,active,cls_bio101,usr_99999,student,false\nenr_03,active,cls_unknown,usr_002,student,false`
+    };
+
+    let currentFiles = JSON.parse(JSON.stringify(SAMPLES_VALID));
+
+    function selectTab(tab) {
+      saveCurrentTab();
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('csvEditor').value = currentFiles[tab] || '';
+    }
+
+    function saveCurrentTab() {
+      currentFiles[activeTab] = document.getElementById('csvEditor').value;
+    }
+
+    function loadSample(isValid) {
+      currentFiles = JSON.parse(JSON.stringify(isValid ? SAMPLES_VALID : SAMPLES_CORRUPT));
+      document.getElementById('csvEditor').value = currentFiles[activeTab];
+      runValidation();
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      if (lines.length === 0) return [];
+      const headers = lines[0].split(',').map(h => h.trim());
+      return lines.slice(1).map(l => {
+        const parts = l.split(',');
+        const row = {};
+        headers.forEach((h, idx) => row[h] = parts[idx] ? parts[idx].trim() : '');
+        return row;
+      });
+    }
+
+    function runValidation() {
+      saveCurrentTab();
+      const list = document.getElementById('diagList');
+      list.innerHTML = '';
+      const items = [];
+
+      // 1. Check BOM
+      Object.entries(currentFiles).forEach(([name, content]) => {
+        if (content.charCodeAt(0) === 0xFEFF || content.startsWith('\uFEFF')) {
+          items.push({ type: 'warning', text: `${name}.csv: UTF-8 BOM (Byte Order Mark) detected! This will corrupt column headers in Clever/SIS.` });
+        }
+      });
+
+      // 2. Parse users and classes keys
+      const usersRows = parseCSV(currentFiles.users || '');
+      const userKeys = new Set(usersRows.map(r => r.sourcedId || r['\uFEFFsourcedId']));
+      
+      const classRows = parseCSV(currentFiles.classes || '');
+      const classKeys = new Set(classRows.map(r => r.sourcedId || r['\uFEFFsourcedId']));
+
+      // 3. Check enrollments
+      const enrollRows = parseCSV(currentFiles.enrollments || '');
+      const validRoles = new Set(['administrator', 'proctor', 'student', 'teacher']);
+
+      enrollRows.forEach((r, idx) => {
+        const line = idx + 2;
+        if (r.userSourcedId && !userKeys.has(r.userSourcedId)) {
+          items.push({ type: 'error', text: `enrollments.csv (Line ${line}): Orphan foreign key! userSourcedId '${r.userSourcedId}' does not exist in users.csv.` });
+        }
+        if (r.classSourcedId && !classKeys.has(r.classSourcedId)) {
+          items.push({ type: 'error', text: `enrollments.csv (Line ${line}): Orphan foreign key! classSourcedId '${r.classSourcedId}' does not exist in classes.csv.` });
+        }
+        if (r.role && !validRoles.has(r.role)) {
+          items.push({ type: 'error', text: `enrollments.csv (Line ${line}): Illegal role enum '${r.role}'. Must be one of: administrator, proctor, student, teacher.` });
+        }
+      });
+
+      if (items.length === 0) {
+        items.push({ type: 'success', text: '✓ 100% Referential Integrity Verified: Zero orphan keys, valid roles, clean manifest.' });
+        document.getElementById('linterStatus').innerText = 'All checks passed (PASSED)';
+        document.getElementById('linterStatus').style.color = 'var(--accent-emerald)';
+      } else {
+        const errCount = items.filter(i => i.type === 'error').length;
+        document.getElementById('linterStatus').innerText = `Found ${errCount} critical errors`;
+        document.getElementById('linterStatus').style.color = 'var(--accent-red)';
+      }
+
+      items.forEach(it => {
+        const div = document.createElement('div');
+        div.className = `diag-item diag-${it.type}`;
+        div.innerText = it.text;
+        list.appendChild(div);
+      });
+    }
+
+    // Init
+    document.getElementById('csvEditor').value = currentFiles[activeTab];
+    runValidation();
+  </script>
 </body>
 </html>

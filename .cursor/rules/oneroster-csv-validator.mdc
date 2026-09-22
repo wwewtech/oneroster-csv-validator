@@ -1,13 +1,20 @@
 ---
-description: Validate OneRoster 1.1/1.2 CSV roster sets (manifest, users, classes, enrollments, orgs) for bulk vs delta correctness, GUID integrity, orphan links, and encoding traps before SIS/Clever import.
-globs: **/*.{csv,json,py,js,ts,yaml,yml}
+description: Autonomous 1EdTech OneRoster Specialist. Validates OneRoster v1.1/v1.2 CSV roster packages, foreign key integrity, and UTF-8 encoding.
+globs: **/*.{csv,zip,py,ts,js}
 alwaysApply: false
 ---
-# OneRoster CSV Validator
 
-- Core requirement: manifest.csv must exist at the zip root and accurately describe the files present.
-- Bulk vs Delta: Bulk rows MUST NOT have `dateLastModified` or `status`. Delta rows MUST have them. Mixed files are invalid.
-- GUID Integrity: All `sourcedId` referenced must exist. Do not invent missing IDs.
-- Enrollment Sanity: Each class needs a primary teacher and one student.
-- Encoding: UTF-8 required. Check for stripped leading zeros (Excel corruption).
-- Never auto-fix CSV files in place, produce a detailed findings report instead.
+# OneRoster CSV Validator: Data Invariants
+
+You are an Autonomous EdTech Data Integration Specialist. When validating, building, or auditing OneRoster packages, enforce these rules:
+
+## 1. Archive & Manifest Authority
+- `manifest.csv` must reside at `/` of the zip.
+- All files present in the zip must be listed in `manifest.csv`.
+
+## 2. Referential Integrity
+- `enrollments.csv` must have zero broken foreign keys pointing to missing `userSourcedId` or `classSourcedId`.
+
+## 3. Bulk Purity & BOM Sanitization
+- Bulk exchange mode strictly disallows `dateLastModified` and delta status markers.
+- Strip UTF-8 BOM (`\xEF\xBB\xBF`) on ingest.

@@ -1,27 +1,22 @@
 {
   "evals": [
     {
-      "prompt": "Validate this extracted OneRoster bulk export. It contains users.csv, orgs.csv, classes.csv, enrollments.csv, courses.csv, and academicSessions.csv but no manifest.csv.",
-      "files": [],
       "id": 1,
-      "expected_output": "Agent stops immediately and reports: manifest.csv is REQUIRED at zip root under OneRoster 1.1/1.2 rules. Does not guess the spec version. Reports verdict as INVALID with the specific missing file. Does not attempt to validate remaining files without the manifest.",
-      "name": "missing_manifest"
+      "name": "orphan-enrollment-and-referential-integrity",
+      "prompt": "We exported our school SIS to OneRoster CSV format. Clever failed our import with 'Foreign key error in enrollments.csv'. Here is a sample: enr_101,cls_chem,usr_4402,student. How do we audit our entire roster for this?",
+      "expected_output": "The agent specifies loading all primary keys (sourcedId) from users.csv and classes.csv into memory sets, and iterating through enrollments.csv to ensure every userSourcedId and classSourcedId resolves to an existing entity. It flags orphan references explicitly and provides a Python validation script."
     },
     {
-      "prompt": "Check this OneRoster bulk export for referential integrity. The enrollments.csv references userSourcedId values that don't appear in users.csv.",
-      "files": [],
       "id": 2,
-      "expected_output": "Agent runs GUID integrity check across all files. Lists every orphan reference with file name and line number (e.g., enrollments.csv:47 → missing user ID abc123). Never invents missing IDs. Reports each class that lacks a primary teacher or has zero students. Verdict: FIXABLE with specific list of orphan references to resolve.",
-      "name": "orphan_sourced_ids"
+      "name": "utf8-bom-and-excel-export-sanitization",
+      "prompt": "After our admin edited users.csv in Microsoft Excel, our automated sync started failing claiming 'Column sourcedId missing'. The file clearly starts with sourcedId on the first line.",
+      "expected_output": "The agent diagnoses the classic Excel UTF-8 Byte Order Mark (BOM) trap: Excel prepends \\xEF\\xBB\\xBF to the file, causing parsers to read '\\ufeffsourcedId' instead of 'sourcedId'. It provides a one-line Python/bash sanitizer to strip the BOM and re-encode to clean UTF-8."
     },
     {
-      "prompt": "A school admin re-saved the users.csv file in Microsoft Excel before uploading. Some student IDs like 00123 now show as 123. Validate and report issues.",
-      "files": [],
       "id": 3,
-      "expected_output": "Agent detects the encoding trap: Excel strips leading zeros, which changes student IDs (00123 becomes 123). This effectively deletes the original student and creates a new one during import. Flags all affected rows. Recommends CSVEdit, Sublime, or TextEdit instead of Excel. Reports verdict as FIXABLE with a list of corrupted IDs. Never auto-fixes in place — produces findings report only.",
-      "name": "excel_corrupted_zeros"
+      "name": "bulk-vs-delta-mode-strictness",
+      "prompt": "Our manifest.csv declares propertyName 'oneroster.version,1.1' and 'file.users,bulk'. However, our SIS export script includes a dateLastModified column with ISO timestamps and a status column with 'tobedeleted' on users.csv. Is this compliant?",
+      "expected_output": "The agent strictly states this is non-compliant with OneRoster v1.1. In bulk exchange mode, files represent a full snapshot and must NOT contain dateLastModified or delta status markers. It explains that mixing bulk and delta headers causes ingestion parsers to either drop records or crash, and instructs the user to either remove the delta columns or switch the manifest declaration to delta mode."
     }
-  ],
-  "skill_name": "oneroster-csv-validator",
-  "version": "1.0.0"
+  ]
 }
