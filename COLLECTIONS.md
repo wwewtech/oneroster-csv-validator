@@ -22,12 +22,12 @@ This registry catalogs **`oneroster-csv-validator`** across every AI agent direc
 
 | Repository | Focus / Category | Status |
 | :--- | :--- | :--- |
-| **sickn33/agentic-awesome-skills** (46,500+ ⭐) | AAS Core / `skills/oneroster-csv-validator/SKILL.md` | Prepared / Active |
-| **ComposioHQ/awesome-claude-skills** (75,000+ ⭐) | `Education, EdTech & Data Standards` | Prepared / Active |
-| **heilcheng/awesome-agent-skills** (6,200+ ⭐) | `EdTech & Data Validation` | Prepared / Active |
-| **VoltAgent/awesome-agent-skills** (34,500+ ⭐) | `Community Skills -> Education & Data Validation` | Prepared / Active |
-| **PatrickJS/awesome-cursorrules** (10,000+ ⭐) | `EdTech / Data Standards / Python` (`rules/oneroster-csv-validator.mdc`) | Prepared / Active |
-| **BehiSecc/awesome-claude-skills** (10,000+ ⭐) | `Education & Enterprise Integration` | Prepared / Active |
+| **sickn33/agentic-awesome-skills** (46,500+ ⭐) | AAS Core / `skills/oneroster-csv-validator/SKILL.md` | [PR #1563](https://github.com/sickn33/agentic-awesome-skills/pull/1563) |
+| **ComposioHQ/awesome-claude-skills** (75,000+ ⭐) | `Education, EdTech & Data Standards` | [PR #1963](https://github.com/ComposioHQ/awesome-claude-skills/pull/1963) |
+| **heilcheng/awesome-agent-skills** (6,200+ ⭐) | `EdTech & Data Validation` | [PR #518](https://github.com/heilcheng/awesome-agent-skills/pull/518) |
+| **VoltAgent/awesome-agent-skills** (34,500+ ⭐) | `Community Skills -> Education & Data Validation` | [PR #1093](https://github.com/VoltAgent/awesome-agent-skills/pull/1093) |
+| **PatrickJS/awesome-cursorrules** (10,000+ ⭐) | `EdTech / Data Standards / Python` (`rules/oneroster-csv-validator.mdc`) | [PR #392](https://github.com/PatrickJS/awesome-cursorrules/pull/392) |
+| **BehiSecc/awesome-claude-skills** (10,000+ ⭐) | `Education & Enterprise Integration` | [PR #748](https://github.com/BehiSecc/awesome-claude-skills/pull/748) |
 | **rohitg00/awesome-claude-code-toolkit** (2,300+ ⭐) | `Skills -> Data Validation` | Prepared / Active |
 | **Prat011/awesome-llm-skills** (1,700+ ⭐) | `EdTech & Relational Data Validation` | Prepared / Active |
 | **libukai/awesome-agent-skills** (5,100+ ⭐) | `精选技能 -> 教育科技与数据校验 (EdTech & Data Validation)` | Prepared / Active |
