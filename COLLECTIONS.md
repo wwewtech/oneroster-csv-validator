@@ -28,14 +28,12 @@ This registry catalogs **`oneroster-csv-validator`** across every AI agent direc
 | **VoltAgent/awesome-agent-skills** (34,500+ ⭐) | `Community Skills -> Education & Data Validation` | [PR #1093](https://github.com/VoltAgent/awesome-agent-skills/pull/1093) |
 | **PatrickJS/awesome-cursorrules** (10,000+ ⭐) | `EdTech / Data Standards / Python` (`rules/oneroster-csv-validator.mdc`) | [PR #392](https://github.com/PatrickJS/awesome-cursorrules/pull/392) |
 | **BehiSecc/awesome-claude-skills** (10,000+ ⭐) | `Education & Enterprise Integration` | [PR #748](https://github.com/BehiSecc/awesome-claude-skills/pull/748) |
-| **rohitg00/awesome-claude-code-toolkit** (2,300+ ⭐) | `Skills -> Data Validation` | Prepared / Active |
-| **Prat011/awesome-llm-skills** (1,700+ ⭐) | `EdTech & Relational Data Validation` | Prepared / Active |
-| **libukai/awesome-agent-skills** (5,100+ ⭐) | `精选技能 -> 教育科技与数据校验 (EdTech & Data Validation)` | Prepared / Active |
-| **skillmatic-ai/awesome-agent-skills** (670+ ⭐) | `Popular Collections / EdTech` | Prepared / Active |
-| **philipbankier/awesome-agent-skills** | `Domain-Specific -> Education Systems` | Prepared / Active |
-| **karanb192/awesome-claude-skills** | `Education & Standards Compliance` | Prepared / Active |
-| **spencerpauly/awesome-cursor-skills** | `Data Standards & Schema Rules` | Prepared / Active |
-| **jqueryscript/awesome-claude-code** (510+ ⭐) | `Agent Skills -> Education Tools` | Prepared / Active |
+| **rohitg00/awesome-claude-code-toolkit** (2,300+ ⭐) | `Skills -> EdTech & Data Validation` | [PR #805](https://github.com/rohitg00/awesome-claude-code-toolkit/pull/805) |
+| **Prat011/awesome-llm-skills** (1,700+ ⭐) | `Data & Analysis` | [PR #259](https://github.com/Prat011/awesome-llm-skills/pull/259) |
+| **libukai/awesome-agent-skills** (5,100+ ⭐) | `精选技能 -> 编程开发` | [PR #166](https://github.com/libukai/awesome-agent-skills/pull/166) |
+| **skillmatic-ai/awesome-agent-skills** (670+ ⭐) | `Popular Collections` | [PR #183](https://github.com/skillmatic-ai/awesome-agent-skills/pull/183) |
+| **spencerpauly/awesome-cursor-skills** | `Testing` | [PR #83](https://github.com/spencerpauly/awesome-cursor-skills/pull/83) |
+| **jqueryscript/awesome-claude-code** (510+ ⭐) | `Agent Skills` | [PR #690](https://github.com/jqueryscript/awesome-claude-code/pull/690) |
 | **awesome-edtech** | `Educational technology software and data standards` | Target Catalog |
 | **awesome-education** | `Open education tools and SIS/LMS integrations` | Target Catalog |
 | **awesome-csv** | `CSV validation, relational integrity, tabular data` | Target Catalog |
