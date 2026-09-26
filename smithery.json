@@ -3,7 +3,7 @@
   "displayName": "OneRoster CSV Validator",
   "version": "1.0.0",
   "description": "Validate OneRoster 1.1/1.2 CSV roster sets (manifest, users, classes, enrollments, orgs) for bulk vs delta correctness, GUID integrity, orphan links, and encoding traps.",
-  "author": "wwewtech (Pavel Lebedev)",
+  "author": "wwew.tech",
   "repository": "https://github.com/wwewtech/oneroster-csv-validator",
   "homepage": "https://skills.sh/wwewtech/oneroster-csv-validator",
   "license": "MIT",
